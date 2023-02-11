@@ -45,6 +45,8 @@ return require("packer").startup(
                 {"neovim/nvim-lspconfig"},
                 {"williamboman/mason.nvim"},
                 {"williamboman/mason-lspconfig.nvim"},
+                {"jose-elias-alvarez/null-ls.nvim"},
+                {"MunifTanjim/eslint.nvim"},
                 {"hrsh7th/nvim-cmp"},
                 {"hrsh7th/cmp-nvim-lsp"},
                 {"hrsh7th/cmp-buffer"},
@@ -121,12 +123,38 @@ return require("packer").startup(
             end
         }
 
+
         require('core/options')
         require('core/keymap')
         require('lsp')
         vim.cmd("colorscheme onedark")
         vim.cmd("syntax enable")
         vim.g.mapleader = ","
+
+        local null_ls = require("null-ls")
+        local eslint = require("eslint")
+
+        null_ls.setup()
+
+        eslint.setup({
+          bin = 'eslint_d', -- or `eslint_d`
+          code_actions = {
+            enable = true,
+            apply_on_save = {
+              enable = true,
+              --types = { "directive", "problem", "suggestion", "layout" },
+            },
+            disable_rule_comment = {
+              enable = true,
+              location = "separate_line", -- or `same_line`
+            },
+          },
+          diagnostics = {
+            enable = true,
+            report_unused_disable_directives = false,
+            run_on = "type", -- or `save`
+          },
+        })
 
 
     end
