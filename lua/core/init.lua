@@ -58,6 +58,16 @@ return require("packer").startup(
             }
         }
 
+
+        use({
+            "glepnir/lspsaga.nvim",
+            branch = "main",
+            config = function()
+                require("lspsaga").setup({})
+            end,
+            requires = { {"nvim-tree/nvim-web-devicons"} }
+        })
+
         use {
             "lewis6991/gitsigns.nvim",
             config = function()
@@ -124,38 +134,15 @@ return require("packer").startup(
         }
 
 
-        require('core/options')
-        require('core/keymap')
-        require('lsp')
-        vim.cmd("colorscheme onedark")
+
+        vim.cmd("colorscheme gruvbox")
         vim.cmd("syntax enable")
         vim.g.mapleader = ","
-
+        require('lsp')
         local null_ls = require("null-ls")
-        local eslint = require("eslint")
-
         null_ls.setup()
-
-        eslint.setup({
-          bin = 'eslint_d', -- or `eslint_d`
-          code_actions = {
-            enable = true,
-            apply_on_save = {
-              enable = true,
-              --types = { "directive", "problem", "suggestion", "layout" },
-            },
-            disable_rule_comment = {
-              enable = true,
-              location = "separate_line", -- or `same_line`
-            },
-          },
-          diagnostics = {
-            enable = true,
-            report_unused_disable_directives = false,
-            run_on = "type", -- or `save`
-          },
-        })
-
+        require('core/options')
+        require('core/keymap')
 
     end
 )
