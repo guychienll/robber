@@ -45,13 +45,17 @@ return require("packer").startup(
             requires = { { "nvim-lua/plenary.nvim" } }
         }
 
-
+        use "honza/vim-snippets"
+        use "SirVer/ultisnips"
+        use "ryanoasis/vim-devicons"
+        use "michaeljsmith/vim-indent-object"
 
 
         vim.cmd("colorscheme tender")
         vim.cmd("syntax enable")
         vim.g.mapleader = ","
         require('lsp')
+        require('snippet')
         require('core/options')
         require('core/keymap')
     end

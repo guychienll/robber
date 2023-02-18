@@ -1,5 +1,5 @@
 vim.g.coc_global_extensions = { 'coc-json', 'coc-tsserver', 'coc-emmet', 'coc-lua', 'coc-highlight',
-  'coc-eslint', 'coc-prettier' }
+  'coc-eslint', 'coc-prettier', 'coc-snippets' }
 -- Some servers have issues with backup files, see #649
 vim.opt.backup = false
 vim.opt.writebackup = false
