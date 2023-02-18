@@ -1,0 +1,21 @@
+{
+  "eslint.alwaysShowStatus": true,
+  "eslint.options": {
+    "configFile": ".eslintrc.dev.json"
+  },
+  "eslint.autoFixOnSave": true,
+  "diagnostic.errorSign": "",
+  "diagnostic.warningSign": "",
+  "diagnostic.hintSign": "",
+  "diagnostic.infoSign": "",
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "coc.preferences.formatOnSave": true,
+  "Lua.workspace.library": {
+    "/usr/local/share/nvim/runtime/lua": true,
+    "/usr/local/share/nvim/runtime/lua/vim": true,
+    "/usr/local/share/nvim/runtime/lua/vim/lsp": true
+  },
+  "Lua.diagnostics.globals": ["vim"],
+  "emmet.includeLanguages": { "javascript": "javascriptreact", "mako": "html" }
+}

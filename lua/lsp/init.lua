@@ -1,88 +1,103 @@
-local status = pcall(require, "lspconfig")
-if (not status) then return end
+vim.g.coc_global_extensions = { 'coc-json', 'coc-tsserver', 'coc-emmet', 'coc-lua', 'coc-highlight',
+  'coc-eslint', 'coc-prettier' }
+-- Some servers have issues with backup files, see #649
+vim.opt.backup = false
+vim.opt.writebackup = false
 
--- Learn the keybindings, see :help lsp-zero-keybindings
--- Learn to configure LSP servers, see :help lsp-zero-api-showcase
--- (Optional) Configure lua language server for neovim
-local lsp = require("lsp-zero")
-lsp.preset("recommended")
-lsp.nvim_workspace()
-lsp.setup()
-lsp.set_preferences(
-    {
-        suggest_lsp_servers = true,
-        setup_servers_on_start = true,
-        set_lsp_keymaps = false,
-        configure_diagnostics = true,
-        cmp_capabilities = true,
-        manage_nvim_cmp = true,
-        call_servers = "local",
-    }
-)
+-- Having longer updatetime (default is 4000 ms = 4s) leads to noticeable
+-- delays and poor user experience
+vim.opt.updatetime = 300
 
+-- Always show the signcolumn, otherwise it would shift the text each time
+-- diagnostics appeared/became resolved
+vim.opt.signcolumn = "yes"
 
-local protocol = require('vim.lsp.protocol')
-protocol.CompletionItemKind = {
-  '', -- Text
-  '', -- Method
-  '', -- Function
-  '', -- Constructor
-  '', -- Field
-  '', -- Variable
-  '', -- Class
-  'ﰮ', -- Interface
-  '', -- Module
-  '', -- Property
-  '', -- Unit
-  '', -- Value
-  '', -- Enum
-  '', -- Keyword
-  '﬌', -- Snippet
-  '', -- Color
-  '', -- File
-  '', -- Reference
-  '', -- Folder
-  '', -- EnumMember
-  '', -- Constant
-  '', -- Struct
-  '', -- Event
-  'ﬦ', -- Operator
-  '', -- TypeParameter
-}
-
-
-
--- Diagnostic symbols in the sign column (gutter)
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+local keyset = vim.keymap.set
+-- Autocomplete
+function _G.check_back_space()
+  local col = vim.fn.col('.') - 1
+  return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
 end
 
-require("mason").setup(
-    {
-        ui = {
-            icons = {
-                package_installed = "✓",
-                package_pending = "➜",
-                package_uninstalled = "✗"
-            }
-        }
-    }
-)
+-- Use Tab for trigger completion with characters ahead and navigate
+-- NOTE: There's always a completion item selected by default, you may want to enable
+-- no select by setting `"suggest.noselect": true` in your configuration file
+-- NOTE: Use command ':verbose imap <tab>' to make sure Tab is not mapped by
+-- other plugins before putting this into your config
+local opts = { silent = true, noremap = true, expr = true, replace_keycodes = false }
+keyset("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts)
+keyset("i", "<S-TAB>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], opts)
 
-vim.diagnostic.config(
-    {
-        virtual_text = {
-            prefix = "𓆦 ",
-            source = "always",
-        },
-        signs = true,
-        update_in_insert = true,
-        underline = true,
-        severity_sort = true,
-        float = {
-            source = "always",
-        }
-    }
-)
+-- Make <CR> to accept selected completion item or notify coc.nvim to format
+-- <C-g>u breaks current undo, please make your own choice
+keyset("i", "<cr>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]], opts)
+
+-- Use <c-j> to trigger snippets
+keyset("i", "<c-j>", "<Plug>(coc-snippets-expand-jump)")
+-- Use <c-space> to trigger completion
+keyset("i", "<c-space>", "coc#refresh()", { silent = true, expr = true })
+
+-- Use `[g` and `]g` to navigate diagnostics
+-- Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+keyset("n", "zp", "<Plug>(coc-diagnostic-prev)", { silent = true })
+keyset("n", "zn", "<Plug>(coc-diagnostic-next)", { silent = true })
+
+-- GoTo code navigation
+keyset("n", "gd", "<Plug>(coc-definition)", { silent = true })
+keyset("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
+keyset("n", "gi", "<Plug>(coc-implementation)", { silent = true })
+keyset("n", "gr", "<Plug>(coc-references)", { silent = true })
+
+-- Use K to show documentation in preview window
+function _G.show_docs()
+  local cw = vim.fn.expand('<cword>')
+  if vim.fn.index({ 'vim', 'help' }, vim.bo.filetype) >= 0 then
+    vim.api.nvim_command('h ' .. cw)
+  elseif vim.api.nvim_eval('coc#rpc#ready()') then
+    vim.fn.CocActionAsync('doHover')
+  else
+    vim.api.nvim_command('!' .. vim.o.keywordprg .. ' ' .. cw)
+  end
+end
+
+keyset("n", "K", '<CMD>lua _G.show_docs()<CR>', { silent = true })
+
+
+-- Highlight the symbol and its references on a CursorHold event(cursor is idle)
+vim.api.nvim_create_augroup("CocGroup", {})
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = "CocGroup",
+  command = "silent call CocActionAsync('highlight')",
+  desc = "Highlight symbol under cursor on CursorHold"
+})
+
+-- Symbol renaming
+keyset("n", "<leader>rn", "<Plug>(coc-rename)", { silent = true })
+
+
+-- Formatting selected code
+keyset("x", "<leader>f", "<Plug>(coc-format-selected)", { silent = true })
+keyset("n", "<leader>f", "<Plug>(coc-format-selected)", { silent = true })
+
+-- Apply codeAction to the selected region
+-- Example: `<leader>aap` for current paragraph
+local opts = { silent = true, nowait = true }
+keyset("x", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
+keyset("n", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
+
+-- Remap keys for apply code actions at the cursor position.
+keyset("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", opts)
+-- Remap keys for apply code actions affect whole buffer.
+keyset("n", "<leader>as", "<Plug>(coc-codeaction-source)", opts)
+-- Remap keys for applying codeActions to the current buffer
+keyset("n", "<leader>ac", "<Plug>(coc-codeaction)", opts)
+-- Apply the most preferred quickfix action on the current line.
+keyset("n", "<leader>qf", "<Plug>(coc-fix-current)", opts)
+
+-- Remap keys for apply refactor code actions.
+keyset("n", "<leader>re", "<Plug>(coc-codeaction-refactor)", { silent = true })
+keyset("x", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
+keyset("n", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
+
+-- Run the Code Lens actions on the current line
+keyset("n", "<leader>cl", "<Plug>(coc-codelens-action)", opts)
