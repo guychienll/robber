@@ -81,18 +81,18 @@ keyset("n", "<leader>f", "<Plug>(coc-format-selected)", { silent = true })
 
 -- Apply codeAction to the selected region
 -- Example: `<leader>aap` for current paragraph
-local opts = { silent = true, nowait = true }
-keyset("x", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
-keyset("n", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
+local options = { silent = true, nowait = true }
+keyset("x", "<leader>a", "<Plug>(coc-codeaction-selected)", options)
+keyset("n", "<leader>a", "<Plug>(coc-codeaction-selected)", options)
 
 -- Remap keys for apply code actions at the cursor position.
-keyset("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", opts)
+keyset("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", options)
 -- Remap keys for apply code actions affect whole buffer.
-keyset("n", "<leader>as", "<Plug>(coc-codeaction-source)", opts)
+keyset("n", "<leader>as", "<Plug>(coc-codeaction-source)", options)
 -- Remap keys for applying codeActions to the current buffer
-keyset("n", "<leader>ac", "<Plug>(coc-codeaction)", opts)
+keyset("n", "<leader>ac", "<Plug>(coc-codeaction)", options)
 -- Apply the most preferred quickfix action on the current line.
-keyset("n", "<leader>qf", "<Plug>(coc-fix-current)", opts)
+keyset("n", "<leader>qf", "<Plug>(coc-fix-current)", options)
 
 -- Remap keys for apply refactor code actions.
 keyset("n", "<leader>re", "<Plug>(coc-codeaction-refactor)", { silent = true })
@@ -100,4 +100,4 @@ keyset("x", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = 
 keyset("n", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
 
 -- Run the Code Lens actions on the current line
-keyset("n", "<leader>cl", "<Plug>(coc-codelens-action)", opts)
+keyset("n", "<leader>cl", "<Plug>(coc-codelens-action)", options)

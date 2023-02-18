@@ -5,6 +5,8 @@ return require("packer").startup(
         -- Packer can manage itself
         use "wbthomason/packer.nvim" -- package manager
 
+
+
         use "rafi/awesome-vim-colorschemes" -- color schemes
 
         use "vim-airline/vim-airline" -- status bar
@@ -48,6 +50,7 @@ return require("packer").startup(
 
         vim.cmd("colorscheme tender")
         vim.cmd("syntax enable")
+        vim.g.mapleader = ","
         require('lsp')
         require('core/options')
         require('core/keymap')
